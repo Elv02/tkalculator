@@ -10,9 +10,9 @@ def op_precedence(to_check: str) -> int:
     """
     if to_check in ("(", ")"):
         return 4
-    if to_check == "^":
+    if to_check in ("^", "√"):
         return 3
-    if to_check in ("*", "/"):
+    if to_check in ("×", "*", "÷", "/"):
         return 2
     if to_check in ("+", "-"):
         return 1
@@ -36,7 +36,7 @@ def is_op(to_check: str) -> bool:
     """
     if len(to_check)>1:
         return False
-    if to_check in ("+", "-", "*", "/", "^", "(", ")"):
+    if to_check in ("+", "-", "×", "*", "÷", "/", "^", "(", ")", ):
         return True
     return False
 
@@ -94,9 +94,9 @@ def perf_op(first: str, second: str, operator: str) -> float:
         return float(first) + float(second)
     if operator=="-":
         return float(first) - float(second)
-    if operator=="*":
+    if operator=="*" or operator=="×":
         return float(first) * float(second)
-    if operator=="/":
+    if operator=="/" or operator=="÷":
         return float(first) / float(second)
     if operator=="^":
         return pow(float(first), float(second))
@@ -113,6 +113,7 @@ def eval_postfix(postfix: str) -> float:
         if not is_op(_op):
             stack.append(_op)
         else:
+            # TODO: Check for function calls! (Square and Percentage)
             second = stack.pop()
             first = stack.pop()
             stack.append(perf_op(first, second, _op))
