@@ -2,15 +2,19 @@
     GUI Advanced Calculator in Python using Tkinter!
     By Warren Hoeft.
 """
-from tkinter.constants import DISABLED, E, END, GROOVE, N, NORMAL, S, W, WORD
-import utils
+from tkinter.constants import DISABLED, E, END, N, NORMAL, S, W, WORD
 import tkinter as tk
 from tkinter import scrolledtext
 from functools import partial
-from typing import Collection
+import utils
+import btree
 
 
-class calculator:
+class Calculator:
+    """
+        Tkinter Calculator.
+        Contains all logic for the frontend of the calculator.
+    """
     def __init__(self) -> None:
         """
             Create a new instance of the Calculator.
@@ -19,7 +23,7 @@ class calculator:
         self.root = tk.Tk()
         self.root.title("Tkalculator")
 
-        self.output = tk.scrolledtext.ScrolledText(self.root, height = 4, wrap=WORD)
+        self.output = scrolledtext.ScrolledText(self.root, height = 4, wrap=WORD)
         self.output.grid(row=0, column=0, sticky=N+S+E+W, columnspan=6)
 
         self.input = tk.Text(self.root, height=2)
@@ -110,7 +114,10 @@ class calculator:
         """
             Clear the last entered character from the input field.
         """
-        self.input.delete(len(self.input.get()) - 1.0, END)
+        if(self.input.get(1.0, END) == ""):
+            return
+        else:
+            self.input.delete(len(self.input.get(1.0, END)) - 1.0, END)
     
     def clr_input(self) -> None:
         """
@@ -127,12 +134,17 @@ class calculator:
             return
         else:
             infix = self.input.get(1.0, END)
-            # TODO: Validate expression format
-            print(infix)
+            print("INFIX: " + infix)
             postfix = utils.infix_to_postfix(infix)
-            print(postfix)
+            print("POSTFIX: " + postfix)
+            #bin_tree = btree.construct_tree(postfix)
+            #if not btree.is_tree_valid(bin_tree):
+            #    self.output.configure(state=NORMAL)
+            #    self.output.insert(END, "ERROR: Invalid expression format provided.\n")
+            #    self.output.configure(state=DISABLED)
+            #    return
             res = utils.eval_postfix(postfix)
-            print(res)
+            print("RESULT: " + str(res))
             self.output.configure(state=NORMAL)
             self.output.insert(END, infix + " = " + str(res) + "\n")
             self.output.configure(state=DISABLED)
@@ -143,7 +155,7 @@ def main():
     """
         Entry point of program.  Create the calculator.
     """
-    calculator()
+    Calculator()
 
 # Call main function
 if __name__ == "__main__":
