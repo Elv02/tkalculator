@@ -50,7 +50,7 @@ def is_tree_valid(node: Node) -> bool:
         return False
     if node.l_child is not None and node.r_child is None:
         return is_tree_valid(node.l_child)
-    if node.l_child is not None and node.r_child is None:
+    if node.l_child is not None and node.r_child is not None:
         return is_tree_valid(node.l_child) and is_tree_valid(node.r_child)
     return False
 

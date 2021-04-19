@@ -98,57 +98,59 @@ class Calculator:
         button_equ = tk.Button(self.root, text="=", command=self.calc_exp)
         button_equ.grid(row=5, column=4, sticky=N+S+E+W, columnspan=2)
 
-        for x in range(6):
-            self.root.columnconfigure(x, weight=1)
-            self.root.rowconfigure(x, weight=1)
+        for index in range(6):
+            self.root.columnconfigure(index, weight=1)
+            self.root.rowconfigure(index, weight=1)
 
         self.root.mainloop()
 
-    def entered(self, num: str) -> None:
+    def entered(self, val: str) -> None:
         """
             Called when any key on the pad is pressed, adds it to the input field.
         """
-        self.input.insert(END, num)
-    
+        if "-" in val and len(self.input.get(1.0, END)) == 1: # Account for \n
+            self.input.insert(END, "0")
+        self.input.insert(END, val)
+
     def del_input(self) -> None:
         """
             Clear the last entered character from the input field.
         """
-        if(self.input.get(1.0, END) == ""):
+        if len(self.input.get(1.0, END) ) == 1: # Account for \n
             return
         else:
-            self.input.delete(len(self.input.get(1.0, END)) - 1.0, END)
-    
+            self.input.delete("end-2c")
+
     def clr_input(self) -> None:
         """
             Clear the entire input field.
         """
         self.input.delete(1.0, END)
-    
+
     def calc_exp(self) -> None:
         """
             Calculates the value of the expression in the input field.
             Clears input after completion and appends result to the output field.
         """
-        if(self.input.get(1.0, END) == ""):
+        if self.input.get(1.0, END) == "":
             return
-        else:
-            infix = self.input.get(1.0, END)
-            print("INFIX: " + infix)
-            postfix = utils.infix_to_postfix(infix)
-            print("POSTFIX: " + postfix)
-            #bin_tree = btree.construct_tree(postfix)
-            #if not btree.is_tree_valid(bin_tree):
-            #    self.output.configure(state=NORMAL)
-            #    self.output.insert(END, "ERROR: Invalid expression format provided.\n")
-            #    self.output.configure(state=DISABLED)
-            #    return
-            res = utils.eval_postfix(postfix)
-            print("RESULT: " + str(res))
+
+        infix = self.input.get(1.0, END)
+        print("INFIX: " + infix)
+        postfix = utils.infix_to_postfix(infix)
+        print("POSTFIX: " + postfix)
+        bin_tree = btree.construct_tree(postfix)
+        if not btree.is_tree_valid(bin_tree):
             self.output.configure(state=NORMAL)
-            self.output.insert(END, infix + " = " + str(res) + "\n")
+            self.output.insert(END, "ERROR: Invalid expression format provided.\n")
             self.output.configure(state=DISABLED)
-            self.clr_input()
+            return
+        res = utils.eval_postfix(postfix)
+        print("RESULT: " + str(res))
+        self.output.configure(state=NORMAL)
+        self.output.insert(END, infix + " = " + str(res) + "\n")
+        self.output.configure(state=DISABLED)
+        self.clr_input()
 
 
 def main():
